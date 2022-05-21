@@ -241,7 +241,7 @@ bring_balance_to_the_word:
   pushq %r15
 
   movq $0, %rdx // counter of bytes
-  movq $0, %r8 // i - counter of bytes
+  movq $0, %r10 // i - counter of bytes
   movq $0, %r15 // pairity iteration counter
   movq %rdi, %r12 // address of codeword
   movq %rsi, %r13 // length in qwords
@@ -258,10 +258,10 @@ bring_balance_to_the_word:
   movq %r15, %rcx
   and $1, %rcx
   jnz no_bits_inc
-  inc %r8 //i++
+  inc %r10 //i++
   no_bits_inc:
   inc %r15
-  movq %r8, %rax // now we neg k bits
+  movq %r10, %rax // now we neg k bits
   movq $64, %rbx
   movq $0, %rdx
   div %rbx
@@ -287,13 +287,13 @@ bring_balance_to_the_word:
   pushq %rsi
   pushq %rdx
   pushq %rcx
-  pushq %r8
   pushq %r9
+  pushq %r10
   pushq %r11
   call negate_first_k
   popq %r11
+  popq %r10
   popq %r9
-  popq %r8
   popq %rcx
   popq %rdx
   popq %rsi
@@ -303,7 +303,7 @@ bring_balance_to_the_word:
   jmp bal_loop
 
   balanced:
-  movq %r8, %rax
+  movq %r10, %rax
   popq %r15
   popq %r14
   popq %r13
