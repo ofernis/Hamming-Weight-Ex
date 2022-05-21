@@ -240,10 +240,9 @@ bring_balance_to_the_word:
   pushq %r14
   pushq %r15
 
+  movq $0, %rdx // counter of bytes
   movq $0, %r8 // i - counter of bytes
-  movq $0, %r15 // counter of bits
-  movq $0, %rdx # bytes counter
-  xor %rdx, %rdx
+  movq $0, %r15 // pairity iteration counter
   movq %rdi, %r12 // address of codeword
   movq %rsi, %r13 // length in qwords
   
@@ -256,7 +255,8 @@ bring_balance_to_the_word:
   cmpq %rax, %r14 // check if num of 1's equals to half of codeword's len
   je balanced
 
-  testq $1, %r15
+  movq %r15, %rcx
+  and $1, %rcx
   jnz no_bits_inc
   inc %r8 //i++
   no_bits_inc:
@@ -269,7 +269,7 @@ bring_balance_to_the_word:
   movq %rax, %rbx // num of qwords
 
   qword_bal:
-  cmp %rbx, %r11 // check is current byte is last
+  cmp %rbx, %r11 // check if current qword is last
   je bal_last_qword
   movq (%r12, %r11, 8), %rdi
   not %rdi
@@ -278,7 +278,7 @@ bring_balance_to_the_word:
   jmp qword_bal
 
   bal_last_qword:
-  cmpq $0, %rdx
+  cmpq $0, %rdx // check if there are no more bytes
   je bal_loop
   movq (%r12, %r11, 8), %rdi //negate %rdx num of bits
   movq %rdx, %rsi
